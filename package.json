@@ -1,0 +1,24 @@
+{
+  "name": "ntrallazzu",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "side project management utility",
+  "keywords": [
+    "project management",
+    "side projects",
+    "side projects utility",
+    "cli launcher",
+    "source indexer",
+    "cli"
+  ],
+  "author": "Vincenzo Ciaccio <vincenzo.ciaccio@gmail.com>",
+  "license": "MIT",
+  "main": "./index.js",
+  "bin": {
+    "ntrz": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vikkio88/ntrallazzu.git"
+  }
+}
