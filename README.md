@@ -4,6 +4,8 @@ A cli utility to manage sideprojects, `'ntrallazzu` is the sicilian word to expr
 
 This project has no dependencies, only good old plain javascript.
 
+![render1690312286438](https://github.com/vikkio88/ntrallazzu/assets/248805/8e1a7c71-1054-479a-a6d7-da87f0029f09)
+
 ```
 npm i -g ntrallazzu
 ```
