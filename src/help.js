@@ -9,7 +9,8 @@ export function printHelp() {
     Actions:
     . ntrz l
         this command will list your projects
-        ntrz l s will show a simpler list (omitting the date)
+        ntrz l s - will show a simpler list (omitting the date)
+        ntrz l q TERM -  will show a filtered list with projects containing TERM
 
     . ntrz o [index]
         this command will open your project index is the order given by the list.
@@ -23,6 +24,12 @@ export function printHelp() {
     
     . ntrz h
         will print this help
+    
+    . ntrz v
+        will print the version
+    
+    . ntrz i
+        will print config info
     
     
     if the config file (${getConfigFileName()}) does not exist yet the script will use the arg as folder to setup the project

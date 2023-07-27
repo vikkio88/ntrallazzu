@@ -32,7 +32,10 @@ export function init(folder) {
 
     projects.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
 
-    config.projects = projects;
+    config.projects = projects.map((p, index) => {
+        p.index = index;
+        return p;
+    });
 
     saveConfig(config);
     console.log(`found ${projects.length} projects in ${config.codefolders} folder\nconfig file created.\nrun \`l\` command to list the projects.`);

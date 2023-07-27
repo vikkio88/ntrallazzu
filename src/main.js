@@ -1,6 +1,6 @@
 import { printHelp } from "./help.js";
 import { isInit, init, readConfig } from "./init.js";
-import { list, refresh, open, rm } from "./methods.js";
+import { list, refresh, open, rm, version, info } from "./methods.js";
 
 const VALID_ARGS = {
     'l': {
@@ -27,7 +27,17 @@ const VALID_ARGS = {
         name: "Help",
         description: "Print Help",
         func: printHelp
-    }
+    },
+    'v': {
+        name: "Version",
+        description: "Print version",
+        func: version
+    },
+    'i': {
+        name: "Info",
+        description: "Print Info",
+        func: info
+    },
 };
 
 export function main(args) {
