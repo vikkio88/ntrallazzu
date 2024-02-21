@@ -39,6 +39,7 @@ export function init(folder) {
 
     saveConfig(config);
     console.log(`found ${projects.length} projects in ${config.codefolders} folder\nconfig file created.\nrun \`l\` command to list the projects.`);
+    return config;
 }
 
 /** 

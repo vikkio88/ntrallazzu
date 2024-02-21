@@ -11,10 +11,16 @@ export function printHelp() {
         this command will list your projects
         ntrz l s - will show a simpler list (omitting the date)
         ntrz l q TERM -  will show a filtered list with projects containing TERM
+                         and it will copy the first result folder to your clipboard
 
-    . ntrz o [index]
+    . ntrz o [index] [q TERM]
         this command will open your project index is the order given by the list.
         ntrz o without any index param will open the last project you were working on
+        - this also copies to your clipboard the command to switch to the project folder
+    
+    . ntrz cd [index] [q TERM]
+        this command will copy your project folder to your clipboard (the index is the order given by the list).
+        ntrz f without any index param will copy the folder of the last project you were working on
 
     . ntrz r
         this command will refresh the list

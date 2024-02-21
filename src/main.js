@@ -1,6 +1,6 @@
 import { printHelp } from "./help.js";
 import { isInit, init, readConfig } from "./init.js";
-import { list, refresh, open, rm, version, info } from "./methods.js";
+import { list, refresh, open, rm, version, info, cd } from "./methods.js";
 
 const VALID_ARGS = {
     'l': {
@@ -15,8 +15,13 @@ const VALID_ARGS = {
     },
     'o': {
         name: "Open",
-        description: "Open project with index, if no index specified will open the latest",
+        description: "Open project with index, if no index specified will open the latest.",
         func: open
+    },
+    'cd': {
+        name: "Change Directory",
+        description: "Navigate to project folder, if no index specified will open the latest.",
+        func: cd
     },
     'rm': {
         name: "Remove",

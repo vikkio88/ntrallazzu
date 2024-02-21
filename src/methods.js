@@ -1,13 +1,18 @@
 import cproc from "child_process";
 import process from "process";
 import fs from "fs";
-import path from "path";
-import { getConfigFileName, saveConfig } from "./helpers.js";
+import { buildPathFromConfig, folderPathToClipboard, getConfigFileName, getSelectedProjectFolder, isValidQueryParam, saveConfig, } from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
+import { formatDistance } from "date-fns";
 
-function formatDate(date) {
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
     return date.toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatTimeAgo(dateStr) {
+    return formatDistance(new Date(dateStr), new Date(), { addSuffix: true });
 }
 
 /** 
@@ -15,16 +20,16 @@ function formatDate(date) {
  */
 export function list(config, [option, term]) {
     console.log(`Projects in ${config.codefolders}/:`);
-    console.log(`\tlast update - ${formatDate(new Date(config.lastRefreshed))}\n\n`);
+    console.log(`\tlast update - ${formatTimeAgo(config.lastRefreshed)} ${formatDate(config.lastRefreshed)}\n\n`);
     const maxLength = String(config.projects.length - 1).length;
     let projects = config.projects;
 
-    if (["q", "query"].includes(option) && !Boolean(term)) {
+    if (isValidQueryParam(option) && !Boolean(term)) {
         console.error("No search term specified");
         process.exit(1);
     }
 
-    if (["q", "query"].includes(option)) {
+    if (isValidQueryParam(option)) {
         projects = projects.filter(p => p.name.toLocaleLowerCase().includes(term));
     }
 
@@ -40,6 +45,11 @@ export function list(config, [option, term]) {
         const line = `${paddedIndex} - ${p.name}${["simple", "s"].includes(option) ? '' : `\n\t date:${formatDate(lastModified)}\n`}`;
         console.log(line);
     }
+
+    // If you filtered and there are any projects that match copy the first folder
+    if (projects.length > 0 && isValidQueryParam(option)) {
+        folderPathToClipboard(buildPathFromConfig(projects[0], config), true);
+    }
 }
 
 /** 
@@ -47,27 +57,60 @@ export function list(config, [option, term]) {
  */
 export function refresh(config) {
     rm();
-    init(config.codefolders);
-    console.log("refreshed");
+    let lastOpened = null;
+    if (Boolean(config.last)) {
+        lastOpened = `${config.last}`;
+    }
+    const newConfig = init(config.codefolders);
+
+    console.log("refreshed project config.");
+    if (Boolean(lastOpened) && fs.existsSync(lastOpened)) {
+        console.log(`restoring last opened folder "${lastOpened}"`);
+        newConfig.last = lastOpened;
+        saveConfig(newConfig);
+    }
 }
 
 /** 
  * @param {{codefolders: String, projects: {name:string, lastModified:Date}[], editor: String, lastRefreshed: Date}} config a Config Object
  * @param {[]any} args args
  */
-export function open(config, [index]) {
-    const hasIndexSpecified = !(index === undefined);
-    if (!Boolean(config.last) && !hasIndexSpecified) {
-        console.log("Need an index, list the projects first");
-        return;
+export function open(config, [option, term]) {
+    if (isValidQueryParam(option) && !Boolean(term)) {
+        console.error("No search term specified");
+        process.exit(1);
     }
 
-    const selectedProjectFolder = (!hasIndexSpecified && Boolean(config.last)) ? config.last : path.join(`${config.codefolders}`, config.projects[index].name);
-    config.last = selectedProjectFolder;
-    saveConfig(config);
+    const searchOpts = { index: isValidQueryParam(option) ? null : option, term: term };
+    const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
+
+    if (!Boolean(selectedProjectFolder)) {
+        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        process.exit(1);
+    }
 
     console.log(`opening ${selectedProjectFolder}\n\n`);
+    folderPathToClipboard(selectedProjectFolder);
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
+}
+
+/** 
+ * @param {{codefolders: String, projects: {name:string, lastModified:Date}[], editor: String, lastRefreshed: Date}} config a Config Object
+ * @param {[]any} args args
+ */
+export function cd(config, [option, term]) {
+    if (isValidQueryParam(option) && !Boolean(term)) {
+        console.error("No search term specified");
+        process.exit(1);
+    }
+
+    const searchOpts = { index: isValidQueryParam(option) ? null : option, term: term };
+    const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
+    if (!Boolean(selectedProjectFolder)) {
+        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        process.exit(1);
+    }
+    folderPathToClipboard(selectedProjectFolder, true);
 }
 
 /** 
@@ -86,10 +129,10 @@ export function version() {
 export function info(config) {
     console.log(
         `
-        last project open: ${config.last ?? "NOTHING"}
+        last project opened: ${config.last ?? "nothing yet..."}
 
         folder: ${config.codefolders}
-        last update: ${config.lastRefreshed}
+        last update: ${formatTimeAgo(config.lastRefreshed)} - ${formatDate(config.lastRefreshed)}
 
         `
     );

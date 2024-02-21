@@ -38,3 +38,7 @@ ntrz o
 - [x] Order folders by lastmodified date
 - [ ] Parse recognise folders project language
 - [ ] Create new project
+- [ ] Add time-ago to check how far back you refreshed the project
+- [ ] suggest refresh if it was refreshed loads of time ago
+- [x] persist last opened through refresh if the folder exists (this will allow auto-refresh maybe?)
+- [x] Open project by abbreviation not only index `ntrz o q xxx`
