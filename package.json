@@ -11,11 +11,16 @@
     "source indexer",
     "cli"
   ],
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
   "author": "Vincenzo Ciaccio <vincenzo.ciaccio@gmail.com>",
   "license": "MIT",
-  "main": "./index.js",
+  "main": "./dist/index.js",
   "bin": {
-    "ntrz": "./index.js"
+    "ntrz": "./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +29,9 @@
   "dependencies": {
     "clipboardy": "^4.0.0",
     "date-fns": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
   }
 }

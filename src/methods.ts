@@ -1,24 +1,25 @@
 import cproc from "child_process";
 import process from "process";
 import fs from "fs";
-import { buildPathFromConfig, folderPathToClipboard, getConfigFileName, getSelectedProjectFolder, isValidQueryParam, saveConfig, } from "./helpers.js";
+import {
+    buildPathFromConfig, folderPathToClipboard, getConfigFileName,
+    getSelectedProjectFolder, isValidQueryParam, saveConfig,
+} from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
+import { Config } from "./types.js";
 
-function formatDate(dateStr) {
+function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);
     return date.toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-function formatTimeAgo(dateStr) {
-    return formatDistance(new Date(dateStr), new Date(), { addSuffix: true });
+function formatTimeAgo(date: string | Date) {
+    return formatDistance(new Date(date), new Date(), { addSuffix: true });
 }
 
-/** 
- * @param {{codefolders: String, projects: {name:string, lastModified:Date}[], editor: String, lastRefreshed: Date|String}} config a Config Object
- */
-export function list(config, [option, term]) {
+export function list(config: Config, [option, term]: string[]) {
     console.log(`Projects in ${config.codefolders}/:`);
     console.log(`\tlast update - ${formatTimeAgo(config.lastRefreshed)} ${formatDate(config.lastRefreshed)}\n\n`);
     const maxLength = String(config.projects.length - 1).length;
@@ -52,30 +53,24 @@ export function list(config, [option, term]) {
     }
 }
 
-/** 
- * @param {{codefolders: String, projects: string[], editor: String}} config a Config Object
- */
-export function refresh(config) {
-    rm();
-    let lastOpened = null;
+export function refresh(config: Config) {
+    rm(config);
+    let lastOpened: string | null = null;
     if (Boolean(config.last)) {
         lastOpened = `${config.last}`;
     }
     const newConfig = init(config.codefolders);
 
     console.log("refreshed project config.");
-    if (Boolean(lastOpened) && fs.existsSync(lastOpened)) {
+    if (lastOpened != null && fs.existsSync(lastOpened)) {
         console.log(`restoring last opened folder "${lastOpened}"`);
         newConfig.last = lastOpened;
         saveConfig(newConfig);
     }
 }
 
-/** 
- * @param {{codefolders: String, projects: {name:string, lastModified:Date}[], editor: String, lastRefreshed: Date}} config a Config Object
- * @param {[]any} args args
- */
-export function open(config, [option, term]) {
+
+export function open(config: Config, [option, term]: string[]) {
     if (isValidQueryParam(option) && !Boolean(term)) {
         console.error("No search term specified");
         process.exit(1);
@@ -94,11 +89,7 @@ export function open(config, [option, term]) {
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
-/** 
- * @param {{codefolders: String, projects: {name:string, lastModified:Date}[], editor: String, lastRefreshed: Date}} config a Config Object
- * @param {[]any} args args
- */
-export function cd(config, [option, term]) {
+export function cd(config: Config, [option, term]: string[]) {
     if (isValidQueryParam(option) && !Boolean(term)) {
         console.error("No search term specified");
         process.exit(1);
@@ -113,10 +104,7 @@ export function cd(config, [option, term]) {
     folderPathToClipboard(selectedProjectFolder, true);
 }
 
-/** 
- * @param {{codefolders: String, projects: string[], editor: String}} config a Config Object
- */
-export function rm(config) {
+export function rm(config: Config) {
     const filename = getConfigFileName();
     fs.rmSync(filename);
     console.log("removed config file");
@@ -126,7 +114,7 @@ export function version() {
     console.log(`ntrallazzu - ntrz - version: ${v()}`);
 }
 
-export function info(config) {
+export function info(config: Config) {
     console.log(
         `
         last project opened: ${config.last ?? "nothing yet..."}
