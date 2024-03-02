@@ -8,7 +8,6 @@ import {
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
-import { Config } from "./types.js";
 
 function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);

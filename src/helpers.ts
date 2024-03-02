@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import clipboard from "clipboardy";
 import { CONF_FILENAME } from "./conf.js";
-import { Config, Project } from "./types.js";
 
 export function getConfigFileName(): string {
     return path.join(os.homedir(), CONF_FILENAME);

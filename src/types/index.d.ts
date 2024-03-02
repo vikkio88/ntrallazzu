@@ -1,5 +1,5 @@
 
-export interface Config {
+type Config = {
     codefolders: string,
     lastRefreshed: Date,
     projects: Project[],
@@ -7,7 +7,7 @@ export interface Config {
     last: string | null,
 }
 
-export interface Project {
+type Project = {
     name: string,
     lastModified: string | Date,
     index: number,

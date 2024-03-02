@@ -3,7 +3,6 @@ import os from "os";
 import path from "path";
 import { getConfigFileName, saveConfig } from "./helpers.js";
 import cproc from "child_process";
-import { Config } from "./types.js";
 
 export function isInit() {
     if (!fs.existsSync(getConfigFileName())) {
