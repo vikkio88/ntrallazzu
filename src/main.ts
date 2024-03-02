@@ -45,7 +45,7 @@ const VALID_ARGS = {
     },
 };
 
-export function main(args) {
+export function main(args: string[]) {
     if (Array.isArray(args) && args.length < 1) {
         printHelp();
         return;
