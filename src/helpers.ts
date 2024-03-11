@@ -32,10 +32,10 @@ export function getSelectedProjectFolder(config: Config, { index, term }): strin
         if (!result) {
             return null;
         }
-        folder = buildPathFromConfig(result, config);
+        folder = buildPathFromConfig(result);
 
     } else {
-        folder = buildPathFromConfig(config.projects[index], config);
+        folder = buildPathFromConfig(config.projects[index]);
     }
 
     config.last = folder ?? null;
@@ -44,14 +44,14 @@ export function getSelectedProjectFolder(config: Config, { index, term }): strin
     return folder;
 }
 
-export function buildPathFromConfig(project: Project, config: Config): string {
-    return path.join(`${config.codefolders}`, project.name);
+export function buildPathFromConfig(project: Project): string {
+    return path.join(`${project.codeFolder}`, project.name);
 }
 
 export function folderPathToClipboard(folder: string | null, includeCd: boolean = false) {
     if (!folder) {
         console.log("folder is empty, could not copy to clipboard");
-        return
+        return;
     }
     const cdCommand = `${includeCd ? 'cd ' : ''}${folder}/`;
     clipboard.writeSync(cdCommand);

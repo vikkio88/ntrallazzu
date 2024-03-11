@@ -52,7 +52,7 @@ export function main(args: string[]) {
     }
 
     if (!isInit()) {
-        init(args[0]);
+        init(args);
         return;
     }
 

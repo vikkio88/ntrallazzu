@@ -42,13 +42,14 @@ export function list(config: Config, [option, term]: string[]) {
         const p = projects[i];
         const lastModified = new Date(p.lastModified);
         const paddedIndex = String(p.index).padEnd(maxLength, ' ');
-        const line = `${paddedIndex} - ${p.name}${["simple", "s"].includes(option) ? '' : `\n\t date:${formatDate(lastModified)}\n`}`;
+        const line = `${paddedIndex} - ${p.name}${["simple", "s"].includes(option) ? '' : `\n\t date:${formatDate(lastModified)}`}`;
+        console.log(`\t folder: ${p.codeFolder}\n`);
         console.log(line);
     }
 
     // If you filtered and there are any projects that match copy the first folder
     if (projects.length > 0 && isValidQueryParam(option)) {
-        folderPathToClipboard(buildPathFromConfig(projects[0], config), true);
+        folderPathToClipboard(buildPathFromConfig(projects[0]), true);
     }
 }
 
@@ -114,12 +115,15 @@ export function version() {
 }
 
 export function info(config: Config) {
+    version();
     console.log(
         `
         last project opened: ${config.last ?? "nothing yet..."}
+        last refresh run: ${formatTimeAgo(config.lastRefreshed)} - ${formatDate(config.lastRefreshed)}
+        your code editor cmd is: \`${config.editor}\`
 
-        folder: ${config.codefolders}
-        last update: ${formatTimeAgo(config.lastRefreshed)} - ${formatDate(config.lastRefreshed)}
+        code folders: 
+            ${config.codefolders.join(', ')}
 
         `
     );

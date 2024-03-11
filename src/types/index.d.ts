@@ -1,6 +1,6 @@
 
 type Config = {
-    codefolders: string,
+    codefolders: string[],
     lastRefreshed: Date,
     projects: Project[],
     editor: string,
@@ -9,6 +9,7 @@ type Config = {
 
 type Project = {
     name: string,
+    codeFolder: string,
     lastModified: string | Date,
     index: number,
 }

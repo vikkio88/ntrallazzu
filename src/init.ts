@@ -1,6 +1,6 @@
 import fs from "fs";
 import os from "os";
-import path from "path";
+import path, { join } from "path";
 import { getConfigFileName, saveConfig } from "./helpers.js";
 import cproc from "child_process";
 
@@ -13,34 +13,37 @@ export function isInit() {
     return true;
 }
 
-export function init(folder: string) {
-    const config = createBaseConfig(folder);
-    const projects = fs.readdirSync(config.codefolders, { withFileTypes: true })
-        .filter(obj => {
-            return obj.isDirectory() && fs.existsSync(path.join(config.codefolders, obj.name, ".git"));
-        })
-        .map(dir => {
-            const gitDate = cproc.execSync(`cd ${path.join(config.codefolders, dir.name)} &&` + ' git log -1').toString();
-            const m = gitDate.match(/Date:\s+(.+2\d{3}?)/);
-            const date = new Date(m ? m[1] : 0);
+export function init(folders: string[]) {
+    const config = createBaseConfig(folders);
+    for (const folder of config.codefolders) {
+        const projects = fs.readdirSync(folder, { withFileTypes: true })
+            .filter(obj => {
+                return obj.isDirectory() && fs.existsSync(path.join(folder, obj.name, ".git"));
+            })
+            .map(dir => {
+                const gitDate = cproc.execSync(`cd ${path.join(folder, dir.name)} &&` + ' git log -1').toString();
+                const m = gitDate.match(/Date:\s+(.+2\d{3}?)/);
+                const date = new Date(m ? m[1] : 0);
+                return {
+                    name: dir.name,
+                    lastModified: date,
+                };
+
+            });
+
+        projects.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
+
+        config.projects = [...(config.projects ?? []), ...projects.map((p, index) => {
             return {
-                name: dir.name,
-                lastModified: date,
+                index,
+                codeFolder: folder,
+                ...p,
             };
-
-        });
-
-    projects.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
-
-    config.projects = projects.map((p, index) => {
-        return {
-            index,
-            ...p,
-        };
-    });
+        })];
+    }
 
     saveConfig(config);
-    console.log(`found ${projects.length} projects in ${config.codefolders} folder\nconfig file created.\nrun \`l\` command to list the projects.`);
+    console.log(`found ${config.projects.length} projects in ${config.codefolders, join(', ')} folder\nconfig file created.\nrun \`l\` command to list the projects.`);
     return config;
 }
 
@@ -58,11 +61,13 @@ export function readConfig(): Config | null {
     return config;
 }
 
-function createBaseConfig(folder: string): Config {
-    const codefolders = folder ?? path.join(os.homedir(), "code/");
-    if (!fs.existsSync(folder)) {
-        console.error(`folder ${folder} does not exist, exiting.`);
-        process.exit(1);
-    }
+function createBaseConfig(folders: string[]): Config {
+    const codefolders = folders ?? [path.join(os.homedir(), "code/")];
+    codefolders.forEach(folder => {
+        if (!fs.existsSync(folder)) {
+            console.error(`folder ${folder} does not exist, exiting.`);
+            process.exit(1);
+        }
+    });
     return { codefolders: codefolders, projects: [], editor: "code", lastRefreshed: new Date(), last: null };
 }

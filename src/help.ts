@@ -4,7 +4,8 @@ export function printHelp() {
     console.log(`
     Ntrallazzu - Help
     ntrz - ntrallazzu
-    a small utility to launch/manage your sideprojects.
+    source: https://github.com/vikkio88/ntrallazzu
+    a small utility to launch/manage your projects folders.
 
     Actions:
     . ntrz l
@@ -42,8 +43,8 @@ export function printHelp() {
 
     example
 
-    ntrz ~/code
+    ntrz ~/code [../otherfolder, ...]
 
-    will index all the source/projects in the ~/code folder, ordering them by date.
+    will index all the source/projects in the ~/code folder, ordering them by date (last commit).
     `);
 }
