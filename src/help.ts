@@ -14,14 +14,16 @@ export function printHelp() {
         ntrz l q TERM -  will show a filtered list with projects containing TERM
                          and it will copy the first result folder to your clipboard
 
-    . ntrz o [index] [q TERM]
-        this command will open your project index is the order given by the list.
-        ntrz o without any index param will open the last project you were working on
+    . ntrz o [TERM]
+        this command will open your project last opened project.
+        "ntrz o" without any index param will open the last project you were working on
         - this also copies to your clipboard the command to switch to the project folder
+        if you specify a TERM it will open the project that closest matches that string.
     
-    . ntrz cd [index] [q TERM]
+    . ntrz cd [TERM]
         this command will copy your project folder to your clipboard (the index is the order given by the list).
-        ntrz f without any index param will copy the folder of the last project you were working on
+        "ntrz cd" without any index param will copy the folder of the last project you were working on
+        if you specify a TERM it will open the project that closest matches that string.
 
     . ntrz r
         this command will refresh the list

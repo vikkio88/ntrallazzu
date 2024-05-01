@@ -14,15 +14,14 @@ export function saveConfig(config: Config) {
 }
 
 
-export function getSelectedProjectFolder(config: Config, { index, term }): string | null {
+export function getSelectedProjectFolder(config: Config, { term }): string | null {
     const hasSearchTerm = Boolean(term);
-    const hasIndexSpecified = Boolean(index) && !hasSearchTerm;
-    if (!Boolean(config.last) && !hasIndexSpecified && !hasSearchTerm) {
+    if (!Boolean(config.last) && !hasSearchTerm) {
         console.log("Need an index or a search term (q 'term'), list the projects first");
         return null;
     }
 
-    if (Boolean(config.last) && !hasIndexSpecified && !hasSearchTerm) {
+    if (Boolean(config.last) && !hasSearchTerm) {
         return config.last;
     }
 
@@ -34,8 +33,6 @@ export function getSelectedProjectFolder(config: Config, { index, term }): strin
         }
         folder = buildPathFromConfig(result);
 
-    } else {
-        folder = buildPathFromConfig(config.projects[index]);
     }
 
     config.last = folder ?? null;

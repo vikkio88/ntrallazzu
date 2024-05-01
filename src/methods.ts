@@ -70,13 +70,8 @@ export function refresh(config: Config) {
 }
 
 
-export function open(config: Config, [option, term]: string[]) {
-    if (isValidQueryParam(option) && !Boolean(term)) {
-        console.error("No search term specified");
-        process.exit(1);
-    }
-
-    const searchOpts = { index: isValidQueryParam(option) ? null : option, term: term };
+export function open(config: Config, [term]: string[]) {
+    const searchOpts = { term: term };
     const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
 
     if (!Boolean(selectedProjectFolder)) {
@@ -89,13 +84,8 @@ export function open(config: Config, [option, term]: string[]) {
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
-export function cd(config: Config, [option, term]: string[]) {
-    if (isValidQueryParam(option) && !Boolean(term)) {
-        console.error("No search term specified");
-        process.exit(1);
-    }
-
-    const searchOpts = { index: isValidQueryParam(option) ? null : option, term: term };
+export function cd(config: Config, [term]: string[]) {
+    const searchOpts = { term: term };
     const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
     if (!Boolean(selectedProjectFolder)) {
         console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
