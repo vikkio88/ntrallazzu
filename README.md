@@ -22,7 +22,7 @@ ntrz l
 
 open one in your favourite editor
 ```
-ntrz o 3
+ntrz o [somestring]
 ```
 
 open again the last one you were working on
@@ -32,7 +32,7 @@ ntrz o
 
 you can also use a `query` feature in most commands
 ```
-ntrz o q ntral
+ntrz o ntral
 ```
 this will open the code folder with the name closer to `ntral` in my case will open `~/code/ntrallazzu`, in case of multiple match will open the latest opened.
 
