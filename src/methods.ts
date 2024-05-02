@@ -69,18 +69,23 @@ export function refresh(config: Config) {
     }
 }
 
-
-export function open(config: Config, [term]: string[]) {
-    const searchOpts = { term: term };
+export function open(config: Config, [term, ...others]: string[]) {
+    const NO_COPY_PARAMS = ['-nocp', '-ncp', '--ncp', '--no-cp'];
+    const searchOpts = { term: NO_COPY_PARAMS.includes(term) ? null : term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
 
     if (!Boolean(selectedProjectFolder)) {
-        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        console.log(Boolean(searchOpts.term) ?
+            `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
+            : 'no folder to open... try `l` or `r` to refresh?');
         process.exit(1);
     }
 
-    console.log(`opening ${selectedProjectFolder}\n\n`);
-    folderPathToClipboard(selectedProjectFolder);
+    console.log(`opening ${selectedProjectFolder}`);
+    const extra = Boolean(searchOpts.term) ? others : [term];
+    if (!(Array.isArray(extra) && extra.length > 0 && NO_COPY_PARAMS.includes(extra[0]))) {
+        folderPathToClipboard(selectedProjectFolder);
+    }
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 

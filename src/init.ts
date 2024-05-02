@@ -18,7 +18,19 @@ export function init(folders: string[]) {
     for (const folder of config.codefolders) {
         const projects = fs.readdirSync(folder, { withFileTypes: true })
             .filter(obj => {
-                return obj.isDirectory() && fs.existsSync(path.join(folder, obj.name, ".git"));
+                // If not a git repo
+                if (!(obj.isDirectory() && fs.existsSync(path.join(folder, obj.name, ".git")))) {
+                    return false;
+                }
+                const folderPath = path.join(folder, obj.name);
+
+                try {
+                    cproc.execSync(`cd ${folderPath} && git rev-parse HEAD`, { stdio: 'ignore' });
+                    return true;
+                } catch {
+                    console.log(`\terror: path '${folderPath}' has a git repo but no commits, skipping it...`)
+                    return false;
+                }
             })
             .map(dir => {
                 const gitDate = cproc.execSync(`cd ${path.join(folder, dir.name)} &&` + ' git log -1').toString();
