@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import clipboard from "clipboardy";
 import { CONF_FILENAME } from "./conf.js";
+// import { closest } from "fastest-levenshtein";
 
 export function getConfigFileName(): string {
     return path.join(os.homedir(), CONF_FILENAME);
@@ -27,10 +28,23 @@ export function getSelectedProjectFolder(config: Config, { term }): string | nul
 
     let folder: string | null = null;
     if (hasSearchTerm) {
-        const result = config.projects.find(p => p.name.toLocaleLowerCase().includes(term));
+        // const names: Record<string, Project> = {};
+        let result = config.projects.find(p => {
+            const name = p.name.toLocaleLowerCase();
+            // names[name] = p;
+            return name.includes(term);
+        });
+
+        // if (!result) {
+        //     console.log(`\tcould not find a match for '${term}' getting the closest match.`)
+        //     const res = closest(term, Object.keys(names))
+        //     result = names[res];
+        // }
+
         if (!result) {
             return null;
         }
+
         folder = buildPathFromConfig(result);
 
     }
@@ -42,7 +56,12 @@ export function getSelectedProjectFolder(config: Config, { term }): string | nul
 }
 
 export function buildPathFromConfig(project: Project): string {
-    return path.join(`${project.codeFolder}`, project.name);
+    const result = path.join(`${project.codeFolder}`, project.name);
+    if (!fs.existsSync(result)) {
+        console.log(`Folder ${result} does not exist.`);
+        process.exit(1);
+    }
+    return result
 }
 
 export function folderPathToClipboard(folder: string | null, includeCd: boolean = false) {

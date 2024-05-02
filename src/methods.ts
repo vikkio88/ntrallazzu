@@ -3,7 +3,7 @@ import process from "process";
 import fs from "fs";
 import {
     buildPathFromConfig, folderPathToClipboard, getConfigFileName,
-    getSelectedProjectFolder, isValidQueryParam, saveConfig,
+    getSelectedProjectFolder as findProjectFolderFromArgs, isValidQueryParam, saveConfig,
 } from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
@@ -72,7 +72,7 @@ export function refresh(config: Config) {
 
 export function open(config: Config, [term]: string[]) {
     const searchOpts = { term: term };
-    const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
+    const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
 
     if (!Boolean(selectedProjectFolder)) {
         console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
@@ -86,7 +86,7 @@ export function open(config: Config, [term]: string[]) {
 
 export function cd(config: Config, [term]: string[]) {
     const searchOpts = { term: term };
-    const selectedProjectFolder = getSelectedProjectFolder(config, searchOpts);
+    const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
     if (!Boolean(selectedProjectFolder)) {
         console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
         process.exit(1);
