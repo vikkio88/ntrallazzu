@@ -2,47 +2,71 @@ import { printHelp } from "./help.js";
 import { isInit, init, readConfig } from "./init.js";
 import { list, refresh, open, rm, version, info, cd } from "./methods.js";
 
-const VALID_ARGS = {
-    'l': {
+const METHODS = {
+    LIST: {
         name: "List",
         description: "List projects",
         func: list
     },
-    'r': {
+    REFRESH: {
         name: "Refresh",
         description: "Refresh projects list",
         func: refresh
     },
-    'o': {
+    OPEN: {
         name: "Open",
         description: "Open project with index, if no index specified will open the latest.",
         func: open
     },
-    'cd': {
+    CHANGE_DIRECTORY: {
         name: "Change Directory",
         description: "Navigate to project folder, if no index specified will open the latest.",
         func: cd
     },
-    'rm': {
+    REMOVE: {
         name: "Remove",
         description: "Remove config file",
         func: rm
     },
-    'h': {
+    HELP: {
         name: "Help",
         description: "Print Help",
         func: printHelp
     },
-    'v': {
+    VERSION: {
         name: "Version",
         description: "Print version",
         func: version
     },
-    'i': {
+    INFO: {
         name: "Info",
         description: "Print Info",
         func: info
     },
+}
+
+const VALID_ARGS = {
+    'l': METHODS.LIST,
+    'list': METHODS.LIST,
+    'ls': METHODS.LIST,
+    'r': METHODS.REFRESH,
+    'refresh': METHODS.REFRESH,
+    'o': METHODS.OPEN,
+    'open': METHODS.OPEN,
+    '--open': METHODS.OPEN,
+    'cd': METHODS.CHANGE_DIRECTORY,
+    'rm': METHODS.REMOVE,
+    'remove': METHODS.REMOVE,
+    'help': METHODS.REMOVE,
+    '-h': METHODS.REMOVE,
+    '--help': METHODS.REMOVE,
+    'h': METHODS.REMOVE,
+    'v': METHODS.VERSION,
+    '-v': METHODS.VERSION,
+    '--version': METHODS.VERSION,
+    'version': METHODS.VERSION,
+    'i': METHODS.INFO,
+    'info': METHODS.INFO,
 };
 
 export function main(args: string[]) {
