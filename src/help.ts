@@ -14,12 +14,14 @@ export function printHelp() {
         ntrz l s - will show a simpler list (omitting the date)
         ntrz l q TERM -  will show a filtered list with projects containing TERM
                          and it will copy the first result folder to your clipboard
-    . ntrz o [TERM]
+    . ntrz o [TERM] (--no-cp)
         alias: open, --open
         this command will open your project last opened project.
         "ntrz o" without any index param will open the last project you were working on
         - this also copies to your clipboard the command to switch to the project folder
         if you specify a TERM it will open the project that closest matches that string.
+        - if --no-cp is specified (with or without the search term), it will not copy
+            the folder to the clipboard. (alias: '-nocp', '-ncp', '--ncp')
     
     . ntrz cd [TERM]
         this command will copy your project folder to your clipboard (the index is the order given by the list).
