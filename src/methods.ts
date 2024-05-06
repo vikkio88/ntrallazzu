@@ -8,6 +8,7 @@ import {
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
+import { OPTIONS } from "./const.js";
 
 function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);
@@ -70,7 +71,7 @@ export function refresh(config: Config) {
 }
 
 export function open(config: Config, [term, ...others]: string[]) {
-    const NO_COPY_PARAMS = ['-nocp', '-ncp', '--ncp', '--no-cp'];
+    const NO_COPY_PARAMS = OPTIONS.NO_COPY.opts;
     const searchOpts = { term: NO_COPY_PARAMS.includes(term) ? null : term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
 
