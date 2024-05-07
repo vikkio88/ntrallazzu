@@ -8,7 +8,7 @@ import {
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
-import { OPTIONS } from "./options.js";
+import { OPTIONS, isParam, parseOptions } from "./options.js";
 
 function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);
@@ -71,8 +71,8 @@ export function refresh(config: Config) {
 }
 
 export function open(config: Config, [term, ...others]: string[]) {
-    const NO_COPY_PARAMS = OPTIONS.NO_COPY.opts;
-    const searchOpts = { term: NO_COPY_PARAMS.includes(term) ? null : term };
+    const opts = parseOptions([term, ...others]);
+    const searchOpts = { term: isParam(term) ? null : term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
 
     if (!Boolean(selectedProjectFolder)) {
@@ -82,11 +82,17 @@ export function open(config: Config, [term, ...others]: string[]) {
         process.exit(1);
     }
 
-    console.log(`opening ${selectedProjectFolder}`);
-    const extra = Boolean(searchOpts.term) ? others : [term];
-    if (!(Array.isArray(extra) && extra.length > 0 && NO_COPY_PARAMS.includes(extra[0]))) {
+    if (!opts.NO_COPY) {
         folderPathToClipboard(selectedProjectFolder);
     }
+
+    if (opts.UPDATE) {
+        console.log(`Running GIT PULL in '${selectedProjectFolder}'...`)
+        cproc.exec(`cd ${selectedProjectFolder}/ && git pull`);
+        console.log('Done.')
+    }
+
+    console.log(`opening ${selectedProjectFolder}`);
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
