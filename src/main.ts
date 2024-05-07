@@ -4,43 +4,27 @@ import { list, refresh, open, rm, version, info, cd } from "./methods.js";
 
 const METHODS = {
     LIST: {
-        name: "List",
-        description: "List projects",
         func: list
     },
     REFRESH: {
-        name: "Refresh",
-        description: "Refresh projects list",
         func: refresh
     },
     OPEN: {
-        name: "Open",
-        description: "Open project with index, if no index specified will open the latest.",
         func: open
     },
     CHANGE_DIRECTORY: {
-        name: "Change Directory",
-        description: "Navigate to project folder, if no index specified will open the latest.",
         func: cd
     },
     REMOVE: {
-        name: "Remove",
-        description: "Remove config file",
         func: rm
     },
     HELP: {
-        name: "Help",
-        description: "Print Help",
         func: printHelp
     },
     VERSION: {
-        name: "Version",
-        description: "Print version",
         func: version
     },
     INFO: {
-        name: "Info",
-        description: "Print Info",
         func: info
     },
 }

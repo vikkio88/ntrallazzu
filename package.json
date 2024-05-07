@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest"
   },
   "author": "Vincenzo Ciaccio <vincenzo.ciaccio@gmail.com>",
   "license": "MIT",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.6.0"
   }
 }
