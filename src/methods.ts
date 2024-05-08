@@ -120,7 +120,11 @@ export function info(config: Config) {
     version();
     console.log(
         `
-        last project opened: ${config.last ?? "nothing yet..."}
+
+        last project opened: 
+            
+                ${config.last ?? "nothing yet..."}
+
         last refresh run: ${formatTimeAgo(config.lastRefreshed)} - ${formatDate(config.lastRefreshed)}
         your code editor cmd is: \`${config.editor}\`
 

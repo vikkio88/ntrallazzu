@@ -7,20 +7,20 @@ export const OPTIONS: Option = {
 
 
 export function isParam(value: string): boolean {
-    return value.startsWith(`--`) || value.startsWith('-');
+    return Boolean(value) && (value.startsWith(`--`) || value.startsWith('-'));
 
 }
 
 export function parseOptions(args: string[], allowed = OPTIONS): Record<string, boolean> {
     const options = {};
-    for (const arg of args) {
-        if (!isParam(arg)) {
-            continue;
-        }
 
-        for (const k of Object.keys(allowed)) {
-            const opt = allowed[k];
-            options[k] = opt.default || false;
+    for (const k of Object.keys(allowed)) {
+        const opt = allowed[k];
+        options[k] = opt.default || false;
+        for (const arg of args) {
+            if (!isParam(arg)) {
+                continue;
+            }
             if (opt.opts.includes(arg)) {
                 options[k] = true;
             }
