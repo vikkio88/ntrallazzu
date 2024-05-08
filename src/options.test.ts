@@ -6,4 +6,5 @@ test("Option parser returns correct args", () => {
     expect(parseOptions(['--n'], { NO: { opts: ['--n'] } })).toEqual({ NO: true })
     expect(parseOptions(['--x'], { NO: { opts: ['--n'] } })).toEqual({ NO: false })
     expect(parseOptions(['--x', '--banana'], { NO: { opts: ['--n', '--banana'] } })).toEqual({ NO: true })
+    expect(parseOptions([], { NO: { opts: ['--n', '--banana'] } })).toEqual({ NO: false })
 })
