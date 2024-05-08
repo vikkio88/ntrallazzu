@@ -55,7 +55,7 @@ export function init(folders: string[]) {
     }
 
     saveConfig(config);
-    console.log(`found ${config.projects.length} projects in ${config.codefolders, join(', ')} folder\nconfig file created.\nrun \`l\` command to list the projects.`);
+    console.log(`\nFound ${config.projects.length} projects in folders: [ ${config.codefolders.join(', ')} ]\nconfig file created.\n\nrun \`l\` command to list the projects.\n`);
     return config;
 }
 
