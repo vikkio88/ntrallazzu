@@ -8,7 +8,7 @@ import {
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
-import { OPTIONS, isParam, parseOptions } from "./options.js";
+import { isParam, parseOptions } from "./options.js";
 
 function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);
