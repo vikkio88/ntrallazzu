@@ -43,54 +43,70 @@ ntrz h
 ```
 
 ```
+    Ntrallazzu - Help
+    ntrz - ntrallazzu
+    source: https://github.com/vikkio88/ntrallazzu
+    a small utility to launch/manage your projects folders.
+
     Actions:
+
     . ntrz l
         alias: list, ls
-        this command will list your projects
-        ntrz l s - will show a simpler list (omitting the date)
-        ntrz l q TERM -  will show a filtered list with projects containing TERM
-                         and it will copy the first result folder to your clipboard
+        This command will list your projects.
+        ntrz l s - will show a simpler list (omitting the date).
+        ntrz l q TERM - will show a filtered list with projects containing TERM
+                         and it will copy the first result folder to your clipboard.
+
     . ntrz o [TERM] (--no-cp)
         alias: open, --open
-        this command will open your project last opened project.
-        "ntrz o" without any index param will open the last project you were working on
-        - this also copies to your clipboard the command to switch to the project folder
-        if you specify a TERM it will open the project that closest matches that string.
-        - if --no-cp is specified (with or without the search term), it will not copy
+        This command will open your last opened project.
+        "ntrz o" without any param will open the last project you were working on.
+        - This also copies to your clipboard the command to switch to the project folder.
+        If you specify a TERM, it will open the project that closest matches that string.
+        - If --no-cp is specified (with or without the search term), it will not copy
             the folder to the clipboard. (alias: '-nocp', '-ncp', '--ncp')
-    
+
     . ntrz cd [TERM]
-        this command will copy your project folder to your clipboard (the index is the order given by the list).
-        "ntrz cd" without any index param will copy the folder of the last project you were working on
-        if you specify a TERM it will open the project that closest matches that string.
+        This command will copy your project folder to your clipboard
+        (the index is the order given by the list).
+        "ntrz cd" without any param will copy the folder of the last project you were working on.
+        If you specify a TERM, it will open the project that closest matches that string.
+    
+    . ntrz url [TERM] (--no-cp)
+        alias: u
+        This command will print the github url of your last opened project.
+        "ntrz u" without any param will print the url of the last project you were working on.
+        - This also copies to your clipboard the same url.
+        If you specify a TERM, it will open the project that closest matches that string.
+        - If --no-cp is specified (with or without the search term), it will not copy
+            the folder to the clipboard. (alias: '-nocp', '-ncp', '--ncp')
 
     . ntrz r
         alias: refresh
-        this command will refresh the list
+        This command will refresh the list.
 
     . ntrz rm
-        this command will remove the config file and allow you to restart fresh
-    
+        This command will remove the config file and allow you to restart fresh.
+
     . ntrz h
         alias: help, -h, --help
-        will print this help
-    
+        Will print this help.
+
     . ntrz v
         alias: version, --v, --version
-        will print the version
-    
+        Will print the version.
+
     . ntrz i
         alias: info
-        will print config info
+        Will print config info.
     
+    If the config file (${getConfigFileName()}) does not exist yet, the script will use the argument(s) as a folder(s) to set up ntrallazzu.
+
+    Example:
     
-    if the config file (${getConfigFileName()}) does not exist yet the script will use the arg as folder to setup the project
-
-    example
-
     ntrz ~/code [../otherfolder, ...]
-
-    will index all the source/projects in the ~/code folder, ordering them by date (last commit).
+    
+    This will index all the source folders in the ~/code folder (and any other folder specified), ordering them by date (last commit).
 ```
 
 ## TODO
