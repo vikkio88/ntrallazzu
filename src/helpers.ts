@@ -74,6 +74,27 @@ export function folderPathToClipboard(folder: string | null, includeCd: boolean 
     console.log(`command: "${cdCommand}" copied to clipboard.`);
 }
 
+const GITHUB_REGEXP = /url = git@github.com:(.+?)\/(.+?)\.git/
+
+export function getProjectUrl(projectFolder: string | null) {
+    if (!projectFolder) {
+        return null;
+    }
+
+    const gitConfigFile = path.join(projectFolder, ".git", "config");
+    if (!fs.existsSync(gitConfigFile)) {
+        return null;
+    }
+
+    const gitConfig = fs.readFileSync(gitConfigFile).toString();
+    let matches = gitConfig.match(GITHUB_REGEXP);
+    if (matches && matches.length >= 3) {
+        return `https://github.com/${matches[1]}/${matches[2]}`;
+    }
+
+    return null;
+}
+
 export function isValidQueryParam(option: string): boolean {
     return ["q", "query"].includes(option);
 }
