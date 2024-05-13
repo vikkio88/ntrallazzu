@@ -4,11 +4,13 @@ import fs from "fs";
 import {
     buildPathFromConfig, folderPathToClipboard, getConfigFileName,
     getSelectedProjectFolder as findProjectFolderFromArgs, isValidQueryParam, saveConfig,
+    getProjectUrl,
 } from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
 import { isParam, parseOptions } from "./options.js";
+import clipboard from "clipboardy";
 
 function formatDate(dateStr: string | Date) {
     const date = new Date(dateStr);
@@ -133,4 +135,28 @@ export function info(config: Config) {
 
         `
     );
+}
+
+export function url(config: Config, [term, ...others]: string[]) {
+    const searchOpts = { term: term };
+    const opts = parseOptions([term, ...others]);
+    const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
+    if (!Boolean(selectedProjectFolder)) {
+        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        process.exit(1);
+    }
+
+    const projectUrl = getProjectUrl(selectedProjectFolder);
+    if (!projectUrl) {
+        console.log(`Could not compute url for project in "${selectedProjectFolder}", is it a github project?`);
+        process.exit(1);
+    }
+
+    console.log(`Git Url for "${selectedProjectFolder}":`);
+    console.log(`\n\t${projectUrl}\n`);
+
+    if (!opts.NO_COPY) {
+        console.log("url copied to clipboard!\n");
+        clipboard.writeSync(projectUrl);
+    }
 }

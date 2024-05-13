@@ -1,6 +1,6 @@
 import { printHelp } from "./help.js";
 import { isInit, init, readConfig } from "./init.js";
-import { list, refresh, open, rm, version, info, cd } from "./methods.js";
+import { list, refresh, open, rm, version, info, cd, url } from "./methods.js";
 
 const METHODS = {
     LIST: {
@@ -27,6 +27,9 @@ const METHODS = {
     INFO: {
         func: info
     },
+    URL: {
+        func: url
+    }
 }
 
 const VALID_ARGS = {
@@ -41,6 +44,8 @@ const VALID_ARGS = {
     'cd': METHODS.CHANGE_DIRECTORY,
     'rm': METHODS.REMOVE,
     'remove': METHODS.REMOVE,
+    'url': METHODS.URL,
+    'u': METHODS.URL,
     'help': METHODS.HELP,
     '-h': METHODS.HELP,
     '--help': METHODS.HELP,
