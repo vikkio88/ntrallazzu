@@ -1,7 +1,7 @@
 type Option = Record<string, { opts: string[], default?: boolean }>;
 
 export const OPTIONS: Option = {
-    NO_COPY: { opts: ['-nocp', '-ncp', '--ncp', '--no-cp', '--no-copy'], default: false },
+    NO_COPY: { opts: ['-nocp', '-ncp', '--ncp', '--no-cp', '--no-copy', '--nocp'], default: false },
     UPDATE: { opts: ['--up', '--update', '-update', '-up',], default: false },
 }
 
