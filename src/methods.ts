@@ -138,8 +138,8 @@ export function info(config: Config) {
 }
 
 export function url(config: Config, [term, ...others]: string[]) {
-    const searchOpts = { term: term };
     const opts = parseOptions([term, ...others]);
+    const searchOpts = { term: isParam(term) ? null : term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
     if (!Boolean(selectedProjectFolder)) {
         console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
