@@ -1,12 +1,12 @@
 import fs from "fs";
 import os from "os";
-import path, { join } from "path";
-import { getConfigFileName, saveConfig } from "./helpers.js";
+import path from "path";
+import { getConfigFileName, saveConfig, l, col } from "./helpers.js";
 import cproc from "child_process";
 
 export function isInit() {
     if (!fs.existsSync(getConfigFileName())) {
-        console.log(`${getConfigFileName()} not found, init config...`);
+        l(`${getConfigFileName()} not found, init config...`);
         return false;
     }
 
@@ -28,7 +28,7 @@ export function init(folders: string[]) {
                     cproc.execSync(`cd ${folderPath} && git rev-parse HEAD`, { stdio: 'ignore' });
                     return true;
                 } catch {
-                    console.log(`\terror: path '${folderPath}' has a git repo but no commits, skipping it...`)
+                    l(`\terror: path '${folderPath}' has a git repo but no commits, skipping it...`);
                     return false;
                 }
             })
@@ -55,7 +55,7 @@ export function init(folders: string[]) {
     }
 
     saveConfig(config);
-    console.log(`\nFound ${config.projects.length} projects in folders: [ ${config.codefolders.join(', ')} ]\nconfig file created.\n\nrun \`l\` command to list the projects.\n`);
+    l(`\nFound ${col.b(config.projects.length)} projects in folders: [ ${col.b(config.codefolders.join(', '))} ]\n${col.cg("config file created")}.\n\nrun ${col.b("'l'")} command to list the projects.\n`);
     return config;
 }
 

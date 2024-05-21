@@ -5,6 +5,7 @@ import {
     buildPathFromConfig, folderPathToClipboard, getConfigFileName,
     getSelectedProjectFolder as findProjectFolderFromArgs, isValidQueryParam, saveConfig,
     getProjectUrl,
+    l, col,
 } from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
@@ -22,8 +23,8 @@ function formatTimeAgo(date: string | Date) {
 }
 
 export function list(config: Config, [option, term]: string[]) {
-    console.log(`Projects in ${config.codefolders}/:`);
-    console.log(`\tlast update - ${formatTimeAgo(config.lastRefreshed)} ${formatDate(config.lastRefreshed)}\n\n`);
+    l(`Projects in ${col.b(config.codefolders.join(', '))}/:`);
+    l(`\t${col.b('last update')} - ${formatTimeAgo(config.lastRefreshed)} ${formatDate(config.lastRefreshed)}\n\n`);
     const maxLength = String(config.projects.length - 1).length;
     let projects = config.projects;
 
@@ -37,17 +38,18 @@ export function list(config: Config, [option, term]: string[]) {
     }
 
     if (projects.length < 1) {
-        console.log("\tNo projects found.\n\n");
+        l("\tNo projects found.\n\n");
         return;
     }
 
     for (const i in projects) {
         const p = projects[i];
         const lastModified = new Date(p.lastModified);
-        const paddedIndex = String(p.index).padEnd(maxLength, ' ');
-        const line = `${paddedIndex} - ${p.name}${["simple", "s"].includes(option) ? '' : `\n\t date:${formatDate(lastModified)}`}`;
-        console.log(`\t folder: ${p.codeFolder}\n`);
-        console.log(line);
+        const paddedIndex = String(p.index + 1).padEnd(maxLength, ' ');
+        // TODO: check about this simple option
+        const line = `${paddedIndex} - ${col.cg(p.name)}${["simple", "s"].includes(option) ? '' : `\n\t ${col.b("date")}:${formatDate(lastModified)}`}`;
+        l(`\t ${col.b("folder")}: ${p.codeFolder}\n`);
+        l(line);
     }
 
     // If you filtered and there are any projects that match copy the first folder
@@ -64,9 +66,9 @@ export function refresh(config: Config) {
     }
     const newConfig = init(config.codefolders);
 
-    console.log("refreshed project config.");
+    l(col.cg("refreshed project config."));
     if (lastOpened != null && fs.existsSync(lastOpened)) {
-        console.log(`restoring last opened folder "${lastOpened}"`);
+        l(`restoring last opened folder "${col.b(lastOpened)}"`);
         newConfig.last = lastOpened;
         saveConfig(newConfig);
     }
@@ -78,7 +80,7 @@ export function open(config: Config, [term, ...others]: string[]) {
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
 
     if (!Boolean(selectedProjectFolder)) {
-        console.log(Boolean(searchOpts.term) ?
+        l(Boolean(searchOpts.term) ?
             `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
             : 'no folder to open... try `l` or `r` to refresh?');
         process.exit(1);
@@ -89,12 +91,13 @@ export function open(config: Config, [term, ...others]: string[]) {
     }
 
     if (opts.UPDATE) {
-        console.log(`Running GIT PULL in '${selectedProjectFolder}'...`)
+        l(col.b("Update Requested:"))
+        l(col.i(`Running GIT PULL in '${selectedProjectFolder}'...`));
         cproc.exec(`cd ${selectedProjectFolder}/ && git pull`);
-        console.log('Done.')
+        l(col.cg('Done.\n\n'));
     }
 
-    console.log(`opening ${selectedProjectFolder}`);
+    l(`${col.b("opening")} "${col.cg(selectedProjectFolder)}" with ${col.b(config.editor)}.\n`);
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
@@ -102,7 +105,7 @@ export function cd(config: Config, [term]: string[]) {
     const searchOpts = { term: term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
     if (!Boolean(selectedProjectFolder)) {
-        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        l(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
         process.exit(1);
     }
     folderPathToClipboard(selectedProjectFolder, true);
@@ -111,16 +114,16 @@ export function cd(config: Config, [term]: string[]) {
 export function rm(config: Config) {
     const filename = getConfigFileName();
     fs.rmSync(filename);
-    console.log("removed config file");
+    l("removed config file");
 }
 
 export function version() {
-    console.log(`ntrallazzu - ntrz - version: ${v()}`);
+    l(`${col.b("ntrallazzu")} - ${col.i("ntrz")}\n\tversion: ${v()}`);
 }
 
 export function info(config: Config) {
     version();
-    console.log(
+    l(
         `
 
         last project opened: 
@@ -142,21 +145,21 @@ export function url(config: Config, [term, ...others]: string[]) {
     const searchOpts = { term: isParam(term) ? null : term };
     const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
     if (!Boolean(selectedProjectFolder)) {
-        console.log(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
+        l(Boolean(term) ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?` : 'no folder to open... try `l` or `r` to refresh?');
         process.exit(1);
     }
 
     const projectUrl = getProjectUrl(selectedProjectFolder);
     if (!projectUrl) {
-        console.log(`Could not compute url for project in "${selectedProjectFolder}", is it a github project?`);
+        l(`${col.cr("Error:")} Could not compute url for project in "${selectedProjectFolder}", is it a github project?`);
         process.exit(1);
     }
 
-    console.log(`Git Url for "${selectedProjectFolder}":`);
-    console.log(`\n\t${projectUrl}\n`);
+    l(`Git Url for "${col.b(selectedProjectFolder)}":`);
+    l(`\n\t${col.cg(projectUrl)}\n`);
 
     if (!opts.NO_COPY) {
-        console.log("url copied to clipboard!\n");
+        l(`${col.i("url copied to clipboard!")}\n`);
         clipboard.writeSync(projectUrl);
     }
 }

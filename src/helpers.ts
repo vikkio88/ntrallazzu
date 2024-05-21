@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import clipboard from "clipboardy";
 import { CONF_FILENAME } from "./conf.js";
+import picocolors from "picocolors";
 // import { closest } from "fastest-levenshtein";
 
 export function getConfigFileName(): string {
@@ -18,7 +19,7 @@ export function saveConfig(config: Config) {
 export function getSelectedProjectFolder(config: Config, { term }): string | null {
     const hasSearchTerm = Boolean(term);
     if (!Boolean(config.last) && !hasSearchTerm) {
-        console.log("Need an index or a search term (q 'term'), list the projects first");
+        l("Need an index or a search term (q 'term'), list the projects first");
         return null;
     }
 
@@ -36,7 +37,7 @@ export function getSelectedProjectFolder(config: Config, { term }): string | nul
         });
 
         // if (!result) {
-        //     console.log(`\tcould not find a match for '${term}' getting the closest match.`)
+        //     l(`\tcould not find a match for '${term}' getting the closest match.`)
         //     const res = closest(term, Object.keys(names))
         //     result = names[res];
         // }
@@ -58,23 +59,23 @@ export function getSelectedProjectFolder(config: Config, { term }): string | nul
 export function buildPathFromConfig(project: Project): string {
     const result = path.join(`${project.codeFolder}`, project.name);
     if (!fs.existsSync(result)) {
-        console.log(`Folder ${result} does not exist.`);
+        l(`Folder ${result} does not exist.`);
         process.exit(1);
     }
-    return result
+    return result;
 }
 
 export function folderPathToClipboard(folder: string | null, includeCd: boolean = false) {
     if (!folder) {
-        console.log("folder is empty, could not copy to clipboard");
+        l(`${col.cr("Error:")} folder is empty, could not copy to clipboard`);
         return;
     }
     const cdCommand = `${includeCd ? 'cd ' : ''}${folder}/`;
     clipboard.writeSync(cdCommand);
-    console.log(`command: "${cdCommand}" copied to clipboard.`);
+    l(`${col.b(includeCd ? "command": "directory")} "${col.cg(cdCommand)}" ${col.i("copied to clipboard")}.\n`);
 }
 
-const GITHUB_REGEXP = /url = git@github.com:(.+?)\/(.+?)\.git/
+const GITHUB_REGEXP = /url = git@github.com:(.+?)\/(.+?)\.git/;
 
 export function getProjectUrl(projectFolder: string | null) {
     if (!projectFolder) {
@@ -98,3 +99,14 @@ export function getProjectUrl(projectFolder: string | null) {
 export function isValidQueryParam(option: string): boolean {
     return ["q", "query"].includes(option);
 }
+
+export function l(message: string) {
+    console.log(message);
+}
+
+export const col = {
+    cg: picocolors.green,
+    cr: picocolors.red,
+    b: picocolors.bold,
+    i: picocolors.italic,
+};
