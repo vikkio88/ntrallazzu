@@ -3,10 +3,11 @@ import { col, getConfigFileName, l } from "./helpers.js";
 export function printHelp() {
     l(`
     ${col.b(col.cg("Ntrallazzu"))}
-        ${col.i("Help")}
-    ${col.b("ntrz - ntrallazzu")}
-    source: https://github.com/vikkio88/ntrallazzu
+    ${col.i("ntrz")}
+    
+    ${col.i("Help")}
     a small utility to launch/manage your projects folders.
+    ${col.b("source")}: https://github.com/vikkio88/ntrallazzu
 
     ${col.b("Actions:")}
 
