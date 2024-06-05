@@ -97,6 +97,11 @@ export function open(config: Config, [term, ...others]: string[]) {
         l(col.cg('Done.\n\n'));
     }
 
+    if (opts.NO_OPEN) {
+        l(`Selected "${col.cr("NO OPEN")}", the project will not be opened.`)
+        process.exit(1);
+    }
+
     l(`${col.b("opening")} "${col.cg(selectedProjectFolder)}" with ${col.b(config.editor)}.\n`);
     cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
@@ -126,15 +131,15 @@ export function info(config: Config) {
     l(
         `
 
-        last project opened: 
+        ${col.i("last project opened")}: 
             
-                ${config.last ?? "nothing yet..."}
+                ${col.b(col.cg(config.last)) ?? col.cr("nothing yet...")}
 
-        last refresh run: ${formatTimeAgo(config.lastRefreshed)} - ${formatDate(config.lastRefreshed)}
-        your code editor cmd is: \`${config.editor}\`
+        last refresh run: ${col.b(formatTimeAgo(config.lastRefreshed))} - ${col.b(formatDate(config.lastRefreshed))}
+        your code editor cmd is: \`${col.b(config.editor)}\`
 
-        code folders: 
-            ${config.codefolders.join(', ')}
+        ${col.i("code folders")}: 
+            ${col.b(config.codefolders.join(', '))}
 
         `
     );
