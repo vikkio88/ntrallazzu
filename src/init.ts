@@ -5,81 +5,111 @@ import { getConfigFileName, saveConfig, l, col } from "./helpers.js";
 import cproc from "child_process";
 
 export function isInit() {
-    if (!fs.existsSync(getConfigFileName())) {
-        l(`${getConfigFileName()} not found, init config...`);
-        return false;
-    }
+  if (!fs.existsSync(getConfigFileName())) {
+    l(`${getConfigFileName()} not found, init config...`);
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
 export function init(folders: string[]) {
-    const config = createBaseConfig(folders);
-    for (const folder of config.codefolders) {
-        const projects = fs.readdirSync(folder, { withFileTypes: true })
-            .filter(obj => {
-                // If not a git repo
-                if (!(obj.isDirectory() && fs.existsSync(path.join(folder, obj.name, ".git")))) {
-                    return false;
-                }
-                const folderPath = path.join(folder, obj.name);
+  const config = createBaseConfig(folders);
+  for (const folder of config.codefolders) {
+    const projects = fs
+      .readdirSync(folder, { withFileTypes: true })
+      .filter((obj) => {
+        // If not a git repo
+        if (
+          !(
+            obj.isDirectory() &&
+            fs.existsSync(path.join(folder, obj.name, ".git"))
+          )
+        ) {
+          return false;
+        }
+        const folderPath = path.join(folder, obj.name);
 
-                try {
-                    cproc.execSync(`cd ${folderPath} && git rev-parse HEAD`, { stdio: 'ignore' });
-                    return true;
-                } catch {
-                    l(`\terror: path '${folderPath}' has a git repo but no commits, skipping it...`);
-                    return false;
-                }
-            })
-            .map(dir => {
-                const gitDate = cproc.execSync(`cd ${path.join(folder, dir.name)} &&` + ' git log -1').toString();
-                const m = gitDate.match(/Date:\s+(.+2\d{3}?)/);
-                const date = new Date(m ? m[1] : 0);
-                return {
-                    name: dir.name,
-                    lastModified: date,
-                };
+        try {
+          cproc.execSync(`cd ${folderPath} && git rev-parse HEAD`, {
+            stdio: "ignore",
+          });
+          return true;
+        } catch {
+          l(
+            `\terror: path '${folderPath}' has a git repo but no commits, skipping it...`
+          );
+          return false;
+        }
+      })
+      .map((dir) => {
+        const gitDate = cproc
+          .execSync(`cd ${path.join(folder, dir.name)} &&` + " git log -1")
+          .toString();
+        const m = gitDate.match(/Date:\s+(.+2\d{3}?)/);
+        const date = new Date(m ? m[1] : 0);
+        return {
+          name: dir.name,
+          lastModified: date,
+        };
+      });
 
-            });
+    projects.sort(
+      (a, b) => b.lastModified.getTime() - a.lastModified.getTime()
+    );
 
-        projects.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
+    config.projects = [
+      ...(config.projects ?? []),
+      ...projects.map((p, index) => {
+        return {
+          index,
+          codeFolder: folder,
+          ...p,
+        };
+      }),
+    ];
+  }
 
-        config.projects = [...(config.projects ?? []), ...projects.map((p, index) => {
-            return {
-                index,
-                codeFolder: folder,
-                ...p,
-            };
-        })];
-    }
+  config.autoCopy = true;
 
-    saveConfig(config);
-    l(`\nFound ${col.b(config.projects.length)} projects in folders: [ ${col.b(config.codefolders.join(', '))} ]\n${col.cg("config file created")}.\n\nrun ${col.b("'l'")} command to list the projects.\n`);
-    return config;
+  saveConfig(config);
+  l(
+    `\nFound ${col.b(config.projects.length)} projects in folders: [ ${col.b(
+      config.codefolders.join(", ")
+    )} ]\n${col.cg("config file created")}.\n\nrun ${col.b(
+      "'l'"
+    )} command to list the projects.\n`
+  );
+  return config;
 }
 
 export function readConfig(): Config | null {
-    const data = fs.readFileSync(getConfigFileName());
+  const data = fs.readFileSync(getConfigFileName());
 
-    let config = null;
-    try {
-        config = JSON.parse(data.toString());
-    } catch {
-        console.error(`Cannot parse ${getConfigFileName()} correctly.`);
-        process.exit(1);
-    }
+  let config = null;
+  try {
+    config = JSON.parse(data.toString());
+  } catch {
+    console.error(`Cannot parse ${getConfigFileName()} correctly.`);
+    process.exit(1);
+  }
 
-    return config;
+  return config;
 }
 
 function createBaseConfig(folders: string[]): Config {
-    const codefolders = folders ?? [path.join(os.homedir(), "code/")];
-    codefolders.forEach(folder => {
-        if (!fs.existsSync(folder)) {
-            console.error(`folder ${folder} does not exist, exiting.`);
-            process.exit(1);
-        }
-    });
-    return { codefolders: codefolders, projects: [], editor: "code", lastRefreshed: new Date(), last: null };
+  const codefolders = folders ?? [path.join(os.homedir(), "code/")];
+  codefolders.forEach((folder) => {
+    if (!fs.existsSync(folder)) {
+      console.error(`folder ${folder} does not exist, exiting.`);
+      process.exit(1);
+    }
+  });
+  return {
+    codefolders: codefolders,
+    projects: [],
+    editor: "code",
+    lastRefreshed: new Date(),
+    last: null,
+  };
 }

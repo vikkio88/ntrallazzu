@@ -12,10 +12,10 @@
     "cli"
   ],
   "scripts": {
-    "build": "tsc",
-    "start": "npm run build && node dist/index.js",
-    "prepublishOnly": "npm run build",
-    "test": "vitest"
+    "build": "bun run bun.build.ts",
+    "start": "bun index.ts",
+    "prepublishOnly": "bun run build",
+    "test": "bun test"
   },
   "author": "Vincenzo Ciaccio <vincenzo.ciaccio@gmail.com>",
   "license": "MIT",
@@ -33,8 +33,9 @@
     "picocolors": "^1.0.1"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/node": "^20.11.24",
-    "typescript": "^5.3.3",
-    "vitest": "^1.6.0"
-  }
+    "typescript": "^5.3.3"
+  },
+  "private": true
 }

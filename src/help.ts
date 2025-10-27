@@ -1,7 +1,7 @@
 import { col, getConfigFileName, l } from "./helpers.js";
 
 export function printHelp() {
-    l(`
+  l(`
     ${col.b(col.cg("Ntrallazzu"))}
     ${col.i("ntrz")}
     

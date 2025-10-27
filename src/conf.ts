@@ -1,1 +1,1 @@
-export const CONF_FILENAME = ".ntr_rc"
+export const CONF_FILENAME = ".ntr_rc";
