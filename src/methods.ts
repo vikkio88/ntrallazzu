@@ -80,17 +80,21 @@ export function list(config: Config, [option, term]: string[]) {
 export function refresh(config: Config) {
   rm(config);
   let lastOpened: string | null = null;
+  let autoCopy: boolean | undefined = undefined;
   if (Boolean(config.last)) {
     lastOpened = `${config.last}`;
+    autoCopy = config.autoCopy;
   }
   const newConfig = init(config.codefolders);
 
   l(col.cg("refreshed project config."));
+  newConfig.autoCopy = autoCopy;
+
   if (lastOpened != null && fs.existsSync(lastOpened)) {
     l(`restoring last opened folder "${col.b(lastOpened)}"`);
     newConfig.last = lastOpened;
-    saveConfig(newConfig);
   }
+  saveConfig(newConfig);
 }
 
 export function open(config: Config, [term, ...others]: string[]) {
