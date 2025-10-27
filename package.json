@@ -21,11 +21,11 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "bin": {
-    "ntrz": "./dist/index.js"
+    "ntrz": "dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vikkio88/ntrallazzu.git"
+    "url": "git+https://github.com/vikkio88/ntrallazzu.git"
   },
   "dependencies": {
     "clipboardy": "^5.0.0",
