@@ -35,8 +35,8 @@ export function list(config: Config, [option, term]: string[]) {
   l(`Projects in ${col.b(config.codefolders.join(", "))}/:`);
   l(
     `\t${col.b("last update")} - ${formatTimeAgo(
-      config.lastRefreshed
-    )} ${formatDate(config.lastRefreshed)}\n\n`
+      config.lastRefreshed,
+    )} ${formatDate(config.lastRefreshed)}\n\n`,
   );
   const maxLength = String(config.projects.length - 1).length;
   let projects = config.projects;
@@ -48,7 +48,7 @@ export function list(config: Config, [option, term]: string[]) {
 
   if (isValidQueryParam(option)) {
     projects = projects.filter((p) =>
-      p.name.toLocaleLowerCase().includes(term)
+      p.name.toLocaleLowerCase().includes(term),
     );
   }
 
@@ -83,7 +83,6 @@ export function refresh(config: Config) {
   let autoCopy: boolean | undefined = undefined;
   if (Boolean(config.last)) {
     lastOpened = `${config.last}`;
-    autoCopy = config.autoCopy;
   }
   const newConfig = init(config.codefolders);
 
@@ -94,6 +93,14 @@ export function refresh(config: Config) {
     l(`restoring last opened folder "${col.b(lastOpened)}"`);
     newConfig.last = lastOpened;
   }
+
+  if (newConfig.editor !== config.editor) {
+    l(
+      `restoring editor setting as it is not the default editor "${col.b(config.editor)}"`,
+    );
+    newConfig.editor = config.editor;
+  }
+
   saveConfig(newConfig);
 }
 
@@ -106,7 +113,7 @@ export function open(config: Config, [term, ...others]: string[]) {
     l(
       Boolean(searchOpts.term)
         ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
-        : "no folder to open... try `l` or `r` to refresh?"
+        : "no folder to open... try `l` or `r` to refresh?",
     );
     process.exit(1);
   }
@@ -129,8 +136,8 @@ export function open(config: Config, [term, ...others]: string[]) {
 
   l(
     `${col.b("opening")} "${col.cg(selectedProjectFolder)}" with ${col.b(
-      config.editor
-    )}.\n`
+      config.editor,
+    )}.\n`,
   );
   cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
@@ -142,7 +149,7 @@ export function cd(config: Config, [term]: string[]) {
     l(
       Boolean(term)
         ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
-        : "no folder to open... try `l` or `r` to refresh?"
+        : "no folder to open... try `l` or `r` to refresh?",
     );
     process.exit(1);
   }
@@ -164,19 +171,19 @@ export function info(config: Config) {
   l(
     `
 
-        ${col.i("last project opened")}: 
-            
+        ${col.i("last project opened")}:
+
                 ${col.b(col.cg(config.last)) ?? col.cr("nothing yet...")}
 
         last refresh run: ${col.b(
-          formatTimeAgo(config.lastRefreshed)
+          formatTimeAgo(config.lastRefreshed),
         )} - ${col.b(formatDate(config.lastRefreshed))}
         your code editor cmd is: \`${col.b(config.editor)}\`
 
-        ${col.i("code folders")}: 
+        ${col.i("code folders")}:
             ${col.b(config.codefolders.join(", "))}
 
-        `
+        `,
   );
 }
 
@@ -188,7 +195,7 @@ export function url(config: Config, [term, ...others]: string[]) {
     l(
       Boolean(term)
         ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
-        : "no folder to open... try `l` or `r` to refresh?"
+        : "no folder to open... try `l` or `r` to refresh?",
     );
     process.exit(1);
   }
@@ -197,8 +204,8 @@ export function url(config: Config, [term, ...others]: string[]) {
   if (!projectUrl) {
     l(
       `${col.cr(
-        "Error:"
-      )} Could not compute url for project in "${selectedProjectFolder}", is it a github project?`
+        "Error:",
+      )} Could not compute url for project in "${selectedProjectFolder}", is it a github project?`,
     );
     process.exit(1);
   }
