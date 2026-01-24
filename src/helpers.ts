@@ -1,9 +1,9 @@
-import os from "os";
-import fs from "fs";
-import path from "path";
 import clipboard from "clipboardy";
-import { CONF_FILENAME } from "./conf.js";
+import fs from "fs";
+import os from "os";
+import path from "path";
 import picocolors from "picocolors";
+import { CONF_FILENAME } from "./conf.js";
 // import { closest } from "fastest-levenshtein";
 
 export function getConfigFileName(): string {
@@ -17,7 +17,7 @@ export function saveConfig(config: Config) {
 
 export function getSelectedProjectFolder(
   config: Config,
-  { term }
+  { term },
 ): string | null {
   const hasSearchTerm = Boolean(term);
   if (!Boolean(config.last) && !hasSearchTerm) {
@@ -69,18 +69,21 @@ export function buildPathFromConfig(project: Project): string {
 export function folderPathToClipboard(
   folder: string | null,
   includeCd: boolean = false,
-  toClipboard: boolean = true
+  toClipboard: boolean = true,
 ) {
   if (!folder) {
     l(`${col.cr("Error:")} folder is empty, could not copy to clipboard`);
     return;
   }
   const cdCommand = `${includeCd ? "cd " : ""}${folder}/`;
-  if (toClipboard) clipboard.writeSync(cdCommand);
+  try {
+    if (toClipboard) clipboard.writeSync(cdCommand);
+    l(`${col.b(includeCd ? "command" : "directory")} "${col.cg(cdCommand)}"\n`);
 
-  l(`${col.b(includeCd ? "command" : "directory")} "${col.cg(cdCommand)}"\n`);
-
-  if (toClipboard) l(`\n\n${col.i("copied to clipboard")}`);
+    if (toClipboard) l(`\n\n${col.i("copied to clipboard")}`);
+  } catch (_) {
+    l(`${col.cr("Error:")} could not copy to clipboard.`);
+  }
 }
 
 const GITHUB_REGEXP = /url = git@github.com:(.+?)\/(.+?)\.git/;
