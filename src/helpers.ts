@@ -86,24 +86,40 @@ export function folderPathToClipboard(
   }
 }
 
-const GITHUB_REGEXP = /url = git@github.com:(.+?)\/(.+?)\.git/;
+const GIT_REMOTE_REGEXPS = [
+  {
+    regexp: /url = git@github\.com:(.+?)\/(.+?)\.git/,
+    base: "https://github.com",
+  },
+  {
+    regexp: /url = git@bitbucket\.org:([^/]+)\/([^/]+)\.git/,
+    base: "https://bitbucket.org",
+  },
+  {
+    regexp: /url = ssh:\/\/git@codeberg\.org\/(.+?)\/(.+?)\.git/,
+    base: "https://codeberg.org",
+  },
+  {
+    regexp: /url = git@gitlab\.com:(.+?)\/(.+?)\.git/,
+    base: "https://gitlab.com",
+  },
+];
 
 export function getProjectUrl(projectFolder: string | null) {
   if (!projectFolder) {
     return null;
   }
-
   const gitConfigFile = path.join(projectFolder, ".git", "config");
   if (!fs.existsSync(gitConfigFile)) {
     return null;
   }
-
   const gitConfig = fs.readFileSync(gitConfigFile).toString();
-  let matches = gitConfig.match(GITHUB_REGEXP);
-  if (matches && matches.length >= 3) {
-    return `https://github.com/${matches[1]}/${matches[2]}`;
+  for (const { regexp, base } of GIT_REMOTE_REGEXPS) {
+    const matches = gitConfig.match(regexp);
+    if (matches && matches.length >= 3) {
+      return `${base}/${matches[1]}/${matches[2]}`;
+    }
   }
-
   return null;
 }
 

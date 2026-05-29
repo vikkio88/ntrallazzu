@@ -205,7 +205,7 @@ export function url(config: Config, [term, ...others]: string[]) {
     l(
       `${col.cr(
         "Error:",
-      )} Could not compute url for project in "${selectedProjectFolder}", is it a github project?`,
+      )} Could not compute url for project in "${selectedProjectFolder}", is it a github/gitlab/bitbucket/codeberg project?`,
     );
     process.exit(1);
   }
