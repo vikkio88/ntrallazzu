@@ -123,6 +123,43 @@ export function getProjectUrl(projectFolder: string | null) {
   return null;
 }
 
+export const SHELL_WRAPPER_MARKER_START =
+  "# >>> ntrallazzu (ntrz) shell integration >>>";
+export const SHELL_WRAPPER_MARKER_END =
+  "# <<< ntrallazzu (ntrz) shell integration <<<";
+
+export function buildShellWrapperSnippet(): string {
+  return `${SHELL_WRAPPER_MARKER_START}
+ntrz() {
+  if [ "$1" = "cd" ]; then
+    local target
+    target=$(command ntrz "$@" --raw)
+    if [ -n "$target" ]; then
+      cd "$target"
+    fi
+  else
+    command ntrz "$@"
+  fi
+}
+${SHELL_WRAPPER_MARKER_END}
+`;
+}
+
+export function getShellRcFileName(
+  shell: string | undefined,
+  home: string = os.homedir(),
+): string | null {
+  if (!shell) return null;
+  const shellName = path.basename(shell);
+  if (shellName === "zsh") return path.join(home, ".zshrc");
+  if (shellName === "bash") return path.join(home, ".bashrc");
+  return null;
+}
+
+export function isShellWrapperInstalled(content: string): boolean {
+  return content.includes(SHELL_WRAPPER_MARKER_START);
+}
+
 export function isValidQueryParam(option: string): boolean {
   return ["q", "query"].includes(option);
 }

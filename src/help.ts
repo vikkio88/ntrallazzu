@@ -32,6 +32,10 @@ export function printHelp() {
         (the index is the order given by the list).
         "ntrz cd" without any param will copy the folder of the last project you were working on.
         If you specify a TERM, it will open the project that closest matches that string.
+        - If --raw is specified, it will print only the bare folder path (no colors,
+            no clipboard copy), intended to be used by a shell wrapper function so that
+            "ntrz cd TERM" can actually change the current shell's directory.
+            (alias: '-raw', '-r')
     
     ${col.b(". ntrz url [TERM] (--no-cp)")}
         alias: u
@@ -60,6 +64,13 @@ export function printHelp() {
     ${col.b(". ntrz i")}
         alias: info
         Will print config info.
+
+    ${col.b(". ntrz install")}
+        Will append a shell wrapper function to your ~/.zshrc (zsh) or ~/.bashrc (bash)
+        so that "ntrz cd [TERM]" actually changes the directory of your current shell,
+        instead of just copying the folder/command to your clipboard.
+        Restart your terminal (or source the rc file) after running it.
+        Errors if your shell is not zsh or bash.
     
     If the config file (${getConfigFileName()}) does not exist yet, the script will use the argument(s) as a folder(s) to set up ntrallazzu.
 
