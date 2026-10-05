@@ -9,13 +9,16 @@ import {
   isValidQueryParam,
   saveConfig,
   getProjectUrl,
+  getShellRcFileName,
+  buildShellWrapperSnippet,
+  isShellWrapperInstalled,
   l,
   col,
 } from "./helpers.js";
 import { init } from "./init.js";
 import v from "./version.cjs";
 import { formatDistance } from "date-fns";
-import { isParam, parseOptions } from "./options.js";
+import { isParam, parseOptions, OPTIONS } from "./options.js";
 import clipboard from "clipboardy";
 
 function formatDate(dateStr: string | Date) {
@@ -142,10 +145,13 @@ export function open(config: Config, [term, ...others]: string[]) {
   cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
-export function cd(config: Config, [term]: string[]) {
+export function cd(config: Config, args: string[]) {
+  const opts = parseOptions(args, { RAW: OPTIONS.RAW });
+  const term = args.find((arg) => !isParam(arg));
   const searchOpts = { term: term };
   const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
   if (!Boolean(selectedProjectFolder)) {
+    if (opts.RAW) process.exit(1);
     l(
       Boolean(term)
         ? `No projects found with search term "${term}", maybe refresh 'r' or list 'l'?`
@@ -153,7 +159,55 @@ export function cd(config: Config, [term]: string[]) {
     );
     process.exit(1);
   }
+
+  if (opts.RAW) {
+    console.log(`${selectedProjectFolder}/`);
+    return;
+  }
+
   folderPathToClipboard(selectedProjectFolder, true, config.autoCopy);
+}
+
+export function install(
+  _config?: Config,
+  _args: string[] = [],
+  overrides: { shell?: string; rcFile?: string } = {},
+) {
+  const shell = overrides.shell ?? process.env.SHELL;
+  const rcFile = overrides.rcFile ?? getShellRcFileName(shell);
+
+  if (!rcFile) {
+    l(
+      `${col.cr("Error:")} unsupported shell "${
+        shell ?? "unknown"
+      }", only zsh and bash are supported.`,
+    );
+    process.exit(1);
+  }
+
+  const existingContent = fs.existsSync(rcFile)
+    ? fs.readFileSync(rcFile).toString()
+    : "";
+
+  if (isShellWrapperInstalled(existingContent)) {
+    l(
+      `${col.cg("Already installed")} in "${col.b(
+        rcFile,
+      )}", nothing to do.\nRun \`${col.b(
+        `source ${rcFile}`,
+      )}\` or restart your terminal if "ntrz cd" is still not changing directory.`,
+    );
+    return;
+  }
+
+  fs.appendFileSync(rcFile, `\n${buildShellWrapperSnippet()}`);
+  l(
+    `${col.cg("Installed")} the shell integration in "${col.b(
+      rcFile,
+    )}".\nRun \`${col.b(
+      `source ${rcFile}`,
+    )}\` or restart your terminal, then "ntrz cd [TERM]" will change your current shell's directory.`,
+  );
 }
 
 export function rm(config: Config) {

@@ -6,6 +6,7 @@ test("Option parser returns correct args", () => {
     NO_COPY: false,
     UPDATE: false,
     NO_OPEN: false,
+    RAW: false,
   });
   expect(parseOptions(["--n"], { NO: { opts: ["--n"] } })).toEqual({
     NO: true,

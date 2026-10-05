@@ -10,6 +10,10 @@ export const OPTIONS: Option = {
     opts: ["--no-open", "--noop", "-no", "-noop", "--no", "-no-open"],
     default: false,
   },
+  RAW: {
+    opts: ["--raw", "-raw", "-r"],
+    default: false,
+  },
 };
 
 export function isParam(value: string): boolean {

@@ -36,6 +36,13 @@ ntrz o ntral
 ```
 this will open the code folder with the name closer to `ntral` in my case will open `~/code/ntrallazzu`, in case of multiple match will open the latest opened.
 
+if you want `ntrz cd [TERM]` to actually change your current shell's directory (instead of just
+copying it to the clipboard), run the installer once (works for zsh and bash):
+```
+ntrz install
+```
+then restart your terminal (or `source ~/.zshrc` / `source ~/.bashrc`).
+
 
 for more info examples
 ```
@@ -99,6 +106,13 @@ ntrz h
     . ntrz i
         alias: info
         Will print config info.
+
+    . ntrz install
+        Will append a shell wrapper function to your ~/.zshrc (zsh) or ~/.bashrc (bash)
+        so that "ntrz cd [TERM]" actually changes the directory of your current shell,
+        instead of just copying the folder/command to your clipboard.
+        Restart your terminal (or source the rc file) after running it.
+        Errors if your shell is not zsh or bash.
     
     If the config file (${getConfigFileName()}) does not exist yet, the script will use the argument(s) as a folder(s) to set up ntrallazzu.
 

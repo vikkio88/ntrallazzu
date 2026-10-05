@@ -1,6 +1,16 @@
 import { printHelp } from "./help.js";
 import { isInit, init, readConfig } from "./init.js";
-import { list, refresh, open, rm, version, info, cd, url } from "./methods.js";
+import {
+  list,
+  refresh,
+  open,
+  rm,
+  version,
+  info,
+  cd,
+  url,
+  install,
+} from "./methods.js";
 
 const METHODS = {
   LIST: {
@@ -30,6 +40,9 @@ const METHODS = {
   URL: {
     func: url,
   },
+  INSTALL: {
+    func: install,
+  },
 };
 
 const VALID_ARGS = {
@@ -56,11 +69,17 @@ const VALID_ARGS = {
   version: METHODS.VERSION,
   i: METHODS.INFO,
   info: METHODS.INFO,
+  install: METHODS.INSTALL,
 };
 
 export function main(args: string[]) {
   if (Array.isArray(args) && args.length < 1) {
     printHelp();
+    return;
+  }
+
+  if (args[0] === "install") {
+    install();
     return;
   }
 
