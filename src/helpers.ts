@@ -2,6 +2,7 @@ import clipboard from "clipboardy";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import process from "process";
 import picocolors from "picocolors";
 import { CONF_FILENAME } from "./conf.js";
 // import { closest } from "fastest-levenshtein";
@@ -31,18 +32,16 @@ export function getSelectedProjectFolder(
 
   let folder: string | null = null;
   if (hasSearchTerm) {
-    // const names: Record<string, Project> = {};
-    let result = config.projects.find((p) => {
-      const name = p.name.toLocaleLowerCase();
-      // names[name] = p;
-      return name.includes(term);
-    });
+    const matches = config.projects.filter((p) =>
+      p.name.toLocaleLowerCase().includes(term),
+    );
 
-    // if (!result) {
-    //     l(`\tcould not find a match for '${term}' getting the closest match.`)
-    //     const res = closest(term, Object.keys(names))
-    //     result = names[res];
-    // }
+    if (matches.length < 1) {
+      return null;
+    }
+
+    const result =
+      matches.length === 1 ? matches[0] : promptForProjectChoice(matches, term);
 
     if (!result) {
       return null;
@@ -55,6 +54,35 @@ export function getSelectedProjectFolder(
   saveConfig(config);
 
   return folder;
+}
+
+export function promptForProjectChoice(
+  matches: Project[],
+  term: string,
+): Project | null {
+  l(`\nMultiple projects match "${col.b(term)}":`);
+  matches.forEach((p, i) => {
+    l(`\t${col.b(String(i + 1))} - ${col.cg(p.name)} (${p.codeFolder})`);
+  });
+
+  const answer = readLineSync(
+    `Which one? [1-${matches.length}]: `,
+  ).trim();
+  const choice = Number(answer);
+
+  if (!Number.isInteger(choice) || choice < 1 || choice > matches.length) {
+    l(`${col.cr("Error:")} invalid choice "${answer}".`);
+    return null;
+  }
+
+  return matches[choice - 1];
+}
+
+export function readLineSync(promptText: string): string {
+  process.stdout.write(promptText);
+  const buffer = Buffer.alloc(1024);
+  const bytesRead = fs.readSync(0, buffer, 0, buffer.length, null);
+  return buffer.toString("utf8", 0, bytesRead);
 }
 
 export function buildPathFromConfig(project: Project): string {
