@@ -107,10 +107,13 @@ export function refresh(config: Config) {
   saveConfig(newConfig);
 }
 
-export function open(config: Config, [term, ...others]: string[]) {
+export async function open(config: Config, [term, ...others]: string[]) {
   const opts = parseOptions([term, ...others]);
   const searchOpts = { term: isParam(term) ? null : term };
-  const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
+  const selectedProjectFolder = await findProjectFolderFromArgs(
+    config,
+    searchOpts,
+  );
 
   if (!Boolean(selectedProjectFolder)) {
     l(
@@ -145,11 +148,14 @@ export function open(config: Config, [term, ...others]: string[]) {
   cproc.exec(`${config.editor} ${selectedProjectFolder}/`);
 }
 
-export function cd(config: Config, args: string[]) {
+export async function cd(config: Config, args: string[]) {
   const opts = parseOptions(args, { RAW: OPTIONS.RAW });
   const term = args.find((arg) => !isParam(arg));
   const searchOpts = { term: term };
-  const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
+  const selectedProjectFolder = await findProjectFolderFromArgs(
+    config,
+    searchOpts,
+  );
   if (!Boolean(selectedProjectFolder)) {
     if (opts.RAW) process.exit(1);
     l(
@@ -241,10 +247,13 @@ export function info(config: Config) {
   );
 }
 
-export function url(config: Config, [term, ...others]: string[]) {
+export async function url(config: Config, [term, ...others]: string[]) {
   const opts = parseOptions([term, ...others]);
   const searchOpts = { term: isParam(term) ? null : term };
-  const selectedProjectFolder = findProjectFolderFromArgs(config, searchOpts);
+  const selectedProjectFolder = await findProjectFolderFromArgs(
+    config,
+    searchOpts,
+  );
   if (!Boolean(selectedProjectFolder)) {
     l(
       Boolean(term)
