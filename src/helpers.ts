@@ -3,6 +3,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import process from "process";
+import readline from "readline/promises";
 import picocolors from "picocolors";
 import { CONF_FILENAME } from "./conf.js";
 // import { closest } from "fastest-levenshtein";
@@ -16,10 +17,10 @@ export function saveConfig(config: Config) {
   fs.writeFileSync(getConfigFileName(), JSON.stringify(config, null, 2));
 }
 
-export function getSelectedProjectFolder(
+export async function getSelectedProjectFolder(
   config: Config,
   { term },
-): string | null {
+): Promise<string | null> {
   const hasSearchTerm = Boolean(term);
   if (!Boolean(config.last) && !hasSearchTerm) {
     l("Need an index or a search term (q 'term'), list the projects first");
@@ -41,7 +42,9 @@ export function getSelectedProjectFolder(
     }
 
     const result =
-      matches.length === 1 ? matches[0] : promptForProjectChoice(matches, term);
+      matches.length === 1
+        ? matches[0]
+        : await promptForProjectChoice(matches, term);
 
     if (!result) {
       return null;
@@ -56,17 +59,19 @@ export function getSelectedProjectFolder(
   return folder;
 }
 
-export function promptForProjectChoice(
+export async function promptForProjectChoice(
   matches: Project[],
   term: string,
-): Project | null {
+  input: NodeJS.ReadableStream = process.stdin,
+  output: NodeJS.WritableStream = process.stdout,
+): Promise<Project | null> {
   l(`\nMultiple projects match "${col.b(term)}":`);
   matches.forEach((p, i) => {
     l(`\t${col.b(String(i + 1))} - ${col.cg(p.name)} (${p.codeFolder})`);
   });
 
-  const answer = readLineSync(
-    `Which one? [1-${matches.length}]: `,
+  const answer = (
+    await readLineSync(`Which one? [1-${matches.length}]: `, input, output)
   ).trim();
   const choice = Number(answer);
 
@@ -78,11 +83,17 @@ export function promptForProjectChoice(
   return matches[choice - 1];
 }
 
-export function readLineSync(promptText: string): string {
-  process.stdout.write(promptText);
-  const buffer = Buffer.alloc(1024);
-  const bytesRead = fs.readSync(0, buffer, 0, buffer.length, null);
-  return buffer.toString("utf8", 0, bytesRead);
+export async function readLineSync(
+  promptText: string,
+  input: NodeJS.ReadableStream = process.stdin,
+  output: NodeJS.WritableStream = process.stdout,
+): Promise<string> {
+  const rl = readline.createInterface({ input, output });
+  try {
+    return await rl.question(promptText);
+  } finally {
+    rl.close();
+  }
 }
 
 export function buildPathFromConfig(project: Project): string {

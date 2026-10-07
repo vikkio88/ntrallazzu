@@ -72,7 +72,7 @@ const VALID_ARGS = {
   install: METHODS.INSTALL,
 };
 
-export function main(args: string[]) {
+export async function main(args: string[]) {
   if (Array.isArray(args) && args.length < 1) {
     printHelp();
     return;
@@ -96,7 +96,7 @@ export function main(args: string[]) {
   }
 
   if (Boolean(VALID_ARGS[args[0]])) {
-    VALID_ARGS[args[0]].func(config, args.slice(1));
+    await VALID_ARGS[args[0]].func(config, args.slice(1));
     process.exit(0);
   }
 
