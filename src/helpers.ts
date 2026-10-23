@@ -63,7 +63,7 @@ export async function promptForProjectChoice(
   matches: Project[],
   term: string,
   input: NodeJS.ReadableStream = process.stdin,
-  output: NodeJS.WritableStream = process.stdout,
+  output: NodeJS.WritableStream = process.stderr,
 ): Promise<Project | null> {
   l(`\nMultiple projects match "${col.b(term)}":`);
   matches.forEach((p, i) => {
@@ -86,7 +86,7 @@ export async function promptForProjectChoice(
 export async function readLineSync(
   promptText: string,
   input: NodeJS.ReadableStream = process.stdin,
-  output: NodeJS.WritableStream = process.stdout,
+  output: NodeJS.WritableStream = process.stderr,
 ): Promise<string> {
   const rl = readline.createInterface({ input, output });
   try {
@@ -204,7 +204,10 @@ export function isValidQueryParam(option: string): boolean {
 }
 
 export function l(message: string) {
-  console.log(message);
+  // Written to stderr so interactive/informational output is never swallowed
+  // by `$(...)` command substitution (used by the shell wrapper to capture
+  // the `--raw` path for `ntrz cd`).
+  console.error(message);
 }
 
 export const col = {
